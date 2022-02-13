@@ -75,6 +75,7 @@ public class MyTelegramBot extends TelegramLongPollingBot {
                     e.printStackTrace();
                 }
             }
+            // TODO Add functionality to /saludar command.
 
         }
 
