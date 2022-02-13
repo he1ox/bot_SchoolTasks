@@ -37,16 +37,29 @@ public class MyTelegramBot extends TelegramLongPollingBot {
             String data = callbackQuery.getData();
             var msj = callbackQuery.getMessage();
 
-            if (data.equals("youtube")) {
-                sendMessage.setText("Exito!");
-                sendMessage.setChatId(msj.getChatId().toString());
-                try {
-                    execute(sendMessage);
-                } catch (TelegramApiException e) {
-                    e.printStackTrace();
-                }
+            switch (data) {
+                case "youtube":
+                    sendMessage.setText("Exito!");
+                    sendMessage.setChatId(msj.getChatId().toString());
+                    try {
+                        execute(sendMessage);
+                    } catch (TelegramApiException e) {
+                        e.printStackTrace();
+                    }
 
+                    break;
+                case "documentacion":
+                    sendMessage.setText("Documentacion!");
+                    sendMessage.setChatId(msj.getChatId().toString());
+                    try {
+                        execute(sendMessage);
+                    } catch (TelegramApiException e) {
+                        e.printStackTrace();
+                    }
+
+                    break;
             }
+
         } else {
             Message message = update.getMessage();
             sendMessage.setChatId(message.getChatId().toString());
@@ -170,9 +183,10 @@ public class MyTelegramBot extends TelegramLongPollingBot {
         // Add button to the list
         Buttons.add(youtube);
         // Initialize each button, the text must be written
-        InlineKeyboardButton github = new InlineKeyboardButton("github");
+        InlineKeyboardButton github = new InlineKeyboardButton("Docs");
         // Also must use exactly one of the optional fields,it can edit by set method
-        github.setUrl("https://github.com");
+        // github.setUrl("https://github.com");
+        github.setCallbackData("documentacion");
         // Add button to the list
         Buttons.add(github);
         keyboard.add(Buttons);
