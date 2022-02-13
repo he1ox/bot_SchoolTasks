@@ -1,8 +1,14 @@
 package com.botconfigs;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 /**
@@ -35,12 +41,52 @@ public class MyTelegramBot extends TelegramLongPollingBot {
         sendMessage.enableMarkdown(true);
         sendMessage.setChatId(chatId);
         sendMessage.setText(msg);
+        setButtons(sendMessage);
 
         try {
             execute(sendMessage);
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Method that creates a keyboard
+     * @param sendMessage the message returned to the user
+     */
+    public synchronized void setButtons(SendMessage sendMessage){
+        //Creating the keyboard
+        ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
+        sendMessage.setReplyMarkup(replyKeyboardMarkup);    
+        replyKeyboardMarkup.setSelective(true);
+        replyKeyboardMarkup.setResizeKeyboard(true);
+        replyKeyboardMarkup.setOneTimeKeyboard(true);
+
+        //Create a list of the keyboard's buttons row
+        List<KeyboardRow> keyboard = new ArrayList<>();
+
+        // First row of keyboard
+        KeyboardRow keyboardFirstRow = new KeyboardRow();
+        // Add buttons to the first row of the keyboard
+        keyboardFirstRow.add(new KeyboardButton("Hi !!!"));
+
+        //------------------------------------------
+
+        //Second row of the keyboard
+        KeyboardRow keyboardSecondRow = new KeyboardRow();
+        //Adding buttons to the second row
+        keyboardSecondRow.add(new KeyboardButton("Help! plz"));
+
+        //-------------------------------------------
+
+        //Adding all the buttons to the keyboard list
+        keyboard.add(keyboardFirstRow);
+        keyboard.add(keyboardSecondRow);
+
+        //Assing list to the replyKeyboardMarkup
+        replyKeyboardMarkup.setKeyboard(keyboard);
+
+
     }
 
     /**
