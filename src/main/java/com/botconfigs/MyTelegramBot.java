@@ -4,9 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -23,11 +26,9 @@ public class MyTelegramBot extends TelegramLongPollingBot {
      */
     @Override
     public void onUpdateReceived(Update update) {
-        String message = update.getMessage().getText();
-        String chatId = update.getMessage().getChatId().toString();
-
-        // Echo
-        sendMsg(chatId, message);
+        if(update.getMessage().getText().equals("/start")){
+           
+        }
     }
 
     /**
@@ -52,17 +53,18 @@ public class MyTelegramBot extends TelegramLongPollingBot {
 
     /**
      * Method that creates a keyboard
+     * 
      * @param sendMessage the message returned to the user
      */
-    public synchronized void setButtons(SendMessage sendMessage){
-        //Creating the keyboard
+    public synchronized void setButtons(SendMessage sendMessage) {
+        // Creating the keyboard
         ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
-        sendMessage.setReplyMarkup(replyKeyboardMarkup);    
+        sendMessage.setReplyMarkup(replyKeyboardMarkup);
         replyKeyboardMarkup.setSelective(true);
         replyKeyboardMarkup.setResizeKeyboard(true);
         replyKeyboardMarkup.setOneTimeKeyboard(true);
 
-        //Create a list of the keyboard's buttons row
+        // Create a list of the keyboard's buttons row
         List<KeyboardRow> keyboard = new ArrayList<>();
 
         // First row of keyboard
@@ -70,23 +72,58 @@ public class MyTelegramBot extends TelegramLongPollingBot {
         // Add buttons to the first row of the keyboard
         keyboardFirstRow.add(new KeyboardButton("Hi !!!"));
 
-        //------------------------------------------
+        // ------------------------------------------
 
-        //Second row of the keyboard
+        // Second row of the keyboard
         KeyboardRow keyboardSecondRow = new KeyboardRow();
-        //Adding buttons to the second row
+        // Adding buttons to the second row
         keyboardSecondRow.add(new KeyboardButton("Help! plz"));
 
-        //-------------------------------------------
+        // -------------------------------------------
 
-        //Adding all the buttons to the keyboard list
+        // Adding all the buttons to the keyboard list
         keyboard.add(keyboardFirstRow);
         keyboard.add(keyboardSecondRow);
 
-        //Assing list to the replyKeyboardMarkup
+        // Assing list to the replyKeyboardMarkup
         replyKeyboardMarkup.setKeyboard(keyboard);
 
+    }
 
+    /**
+     * Similar to replyKeyboardMarkup.
+     * This type of keyboard is attached to a specific message and exists only for it.
+     */
+    public void setInLine(String chatId){
+        SendMessage message = new SendMessage();
+        message.setChatId(chatId);
+        message.setText("Inline model below");
+
+        List<List<InlineKeyboardButton>> buttons = new ArrayList<>();
+        List<InlineKeyboardButton> buttons1 = new ArrayList<>();
+
+        InlineKeyboardButton btn = new InlineKeyboardButton();
+        btn.setText("First");
+        btn.setCallbackData("cmd1");
+
+        buttons1.add(btn);
+        buttons.add(buttons1);
+
+        InlineKeyboardMarkup markupKeybard = new InlineKeyboardMarkup();
+        markupKeybard.setKeyboard(buttons);
+
+    }
+
+    public synchronized void answerCallback(String callbackQueryId, String message){
+        AnswerCallbackQuery answer = new AnswerCallbackQuery();
+        answer.setCallbackQueryId(callbackQueryId);
+        answer.setText(message);
+        answer.setShowAlert(true);
+        try {
+            execute(answer);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
