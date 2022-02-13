@@ -6,6 +6,8 @@ import java.util.List;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
+import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
@@ -26,9 +28,43 @@ public class MyTelegramBot extends TelegramLongPollingBot {
      */
     @Override
     public void onUpdateReceived(Update update) {
-        if(update.getMessage().getText().equals("/start")){
-           
+
+        SendMessage sendMessage = new SendMessage();
+
+        if (update.hasCallbackQuery()) {
+            CallbackQuery callbackQuery = update.getCallbackQuery();
+
+            String data = callbackQuery.getData();
+            var msj = callbackQuery.getMessage();
+
+            if (data.equals("youtube")) {
+                sendMessage.setText("Exito!");
+                sendMessage.setChatId(msj.getChatId().toString());
+                try {
+                    execute(sendMessage);
+                } catch (TelegramApiException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        } else {
+            Message message = update.getMessage();
+            sendMessage.setChatId(message.getChatId().toString());
+
+            String text = message.getText();
+
+            if (text.equals("/start")) {
+                sendMessage.setText("Hola!");
+                try {
+                    execute(sendMessage);
+                    sendInlineKeyboard(message.getChatId().toString());
+                } catch (TelegramApiException e) {
+                    e.printStackTrace();
+                }
+            }
+
         }
+
     }
 
     /**
@@ -92,12 +128,13 @@ public class MyTelegramBot extends TelegramLongPollingBot {
 
     /**
      * Similar to replyKeyboardMarkup.
-     * This type of keyboard is attached to a specific message and exists only for it.
+     * This type of keyboard is attached to a specific message and exists only for
+     * it.
      */
-    public void setInLine(String chatId){
+    public void setInLine(String chatId) {
         SendMessage message = new SendMessage();
         message.setChatId(chatId);
-        message.setText("Inline model below");
+        message.setText("Elige una de las opciones :)");
 
         List<List<InlineKeyboardButton>> buttons = new ArrayList<>();
         List<InlineKeyboardButton> buttons1 = new ArrayList<>();
@@ -114,7 +151,44 @@ public class MyTelegramBot extends TelegramLongPollingBot {
 
     }
 
-    public synchronized void answerCallback(String callbackQueryId, String message){
+    public void sendInlineKeyboard(String chatId) {
+        SendMessage message = new SendMessage();
+        message.setChatId(chatId);
+        message.setText("Elige una de las opciones..");
+
+        // Create InlineKeyboardMarkup object
+        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+        // Create the keyboard (list of InlineKeyboardButton list)
+        List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();
+        // Create a list for buttons
+        List<InlineKeyboardButton> Buttons = new ArrayList<InlineKeyboardButton>();
+        // Initialize each button, the text must be written
+        InlineKeyboardButton youtube = new InlineKeyboardButton("youtube");
+        // Also must use exactly one of the optional fields,it can edit by set method
+        youtube.setText("Regresar");
+        youtube.setCallbackData("youtube");
+        // Add button to the list
+        Buttons.add(youtube);
+        // Initialize each button, the text must be written
+        InlineKeyboardButton github = new InlineKeyboardButton("github");
+        // Also must use exactly one of the optional fields,it can edit by set method
+        github.setUrl("https://github.com");
+        // Add button to the list
+        Buttons.add(github);
+        keyboard.add(Buttons);
+        inlineKeyboardMarkup.setKeyboard(keyboard);
+        // Add it to the message
+        message.setReplyMarkup(inlineKeyboardMarkup);
+
+        try {
+            // Send the message
+            execute(message);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public synchronized void answerCallback(String callbackQueryId, String message) {
         AnswerCallbackQuery answer = new AnswerCallbackQuery();
         answer.setCallbackQueryId(callbackQueryId);
         answer.setText(message);
