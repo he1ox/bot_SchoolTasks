@@ -38,8 +38,8 @@ public class MyTelegramBot extends TelegramLongPollingBot {
             var msj = callbackQuery.getMessage();
 
             switch (data) {
-                case "youtube":
-                    sendMessage.setText("Exito!");
+                case "tareasPendientes":
+                    sendMessage.setText("No hay tareas pendientes por el momento.");
                     sendMessage.setChatId(msj.getChatId().toString());
                     try {
                         execute(sendMessage);
@@ -48,8 +48,8 @@ public class MyTelegramBot extends TelegramLongPollingBot {
                     }
 
                     break;
-                case "documentacion":
-                    sendMessage.setText("Documentacion!");
+                case "anunciosClase":
+                    sendMessage.setText("Próxima clase 19/02/2022");
                     sendMessage.setChatId(msj.getChatId().toString());
                     try {
                         execute(sendMessage);
@@ -66,7 +66,7 @@ public class MyTelegramBot extends TelegramLongPollingBot {
 
             String text = message.getText();
 
-            if (text.equals("/start")) {
+            if (text.equals("/start@"+getBotUsername()) || text.equals("/start")) {
                 sendMessage.setText("Hola!");
                 try {
                     execute(sendMessage);
@@ -171,28 +171,31 @@ public class MyTelegramBot extends TelegramLongPollingBot {
 
         // Create InlineKeyboardMarkup object
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+        
         // Create the keyboard (list of InlineKeyboardButton list)
         List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();
         // Create a list for buttons
         List<InlineKeyboardButton> Buttons = new ArrayList<InlineKeyboardButton>();
         // Initialize each button, the text must be written
-        InlineKeyboardButton youtube = new InlineKeyboardButton("youtube");
+        InlineKeyboardButton tareas = new InlineKeyboardButton("Tareas");
         // Also must use exactly one of the optional fields,it can edit by set method
-        youtube.setText("Regresar");
-        youtube.setCallbackData("youtube");
+        tareas.setText("Tareas Pendientes");
+        tareas.setCallbackData("tareasPendientes");
         // Add button to the list
-        Buttons.add(youtube);
+        Buttons.add(tareas);
         // Initialize each button, the text must be written
-        InlineKeyboardButton github = new InlineKeyboardButton("Docs");
+        InlineKeyboardButton anuncios = new InlineKeyboardButton("Anuncios");
         // Also must use exactly one of the optional fields,it can edit by set method
         // github.setUrl("https://github.com");
-        github.setCallbackData("documentacion");
+        anuncios.setText("Anuncios");
+        anuncios.setCallbackData("anunciosClase");
         // Add button to the list
-        Buttons.add(github);
+        Buttons.add(anuncios);
         keyboard.add(Buttons);
         inlineKeyboardMarkup.setKeyboard(keyboard);
         // Add it to the message
         message.setReplyMarkup(inlineKeyboardMarkup);
+        
 
         try {
             // Send the message
